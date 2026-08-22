@@ -7,6 +7,7 @@ const FALLBACK_THUMBS={a6c665e96e964a3b9dbcd1705b7376a6:'https://media.sketchfab
 const viewer=document.querySelector('#fighter-viewer'), nameEl=document.querySelector('#fighter-name'), numberEl=document.querySelector('#fighter-number'), currentEl=document.querySelector('#selection-current'), totalEl=document.querySelector('#selection-total'), roster=document.querySelector('#roster-grid'), sourceLink=document.querySelector('#sketchfab-link'), loading=document.querySelector('#fighter-loading'), descriptionEl=document.querySelector('#model-description'), vertexEl=document.querySelector('#vertex-count'), triangleEl=document.querySelector('#triangle-count'), barsEl=document.querySelector('#power-bars');
 const tagsEl=document.createElement('div');tagsEl.className='model-tags';descriptionEl.after(tagsEl);
 const downloadsEl=document.createElement('a');downloadsEl.className='download-counter is-loading';downloadsEl.target='_blank';downloadsEl.rel='noopener';downloadsEl.innerHTML='<span>SKETCHFAB DOWNLOADS</span><strong>•••</strong><small>VIEW MODEL ↗</small>';sourceLink.after(downloadsEl);
+const likesEl=document.createElement('a');likesEl.className='download-counter like-counter is-loading';likesEl.target='_blank';likesEl.rel='noopener';likesEl.innerHTML='<span>SKETCHFAB LIKES</span><strong>•••</strong><small>VIEW MODEL ↗</small>';downloadsEl.after(likesEl);
 let selected=0;
 totalEl.textContent=FIGHTERS.length;
 roster.innerHTML=FIGHTERS.map((f,i)=>`<button type="button" data-fighter="${i}" aria-label="Select ${f.name}"><img alt="" loading="lazy"><span>${String(i+1).padStart(2,'0')}</span><b>${f.name}</b><i></i></button>`).join('');
@@ -30,9 +31,9 @@ async function hydrateActive(f,index){
   triangleEl.textContent=data?.tri||'Not published';
   tagsEl.innerHTML=(data?.tags||[]).slice(0,14).map(t=>`<span>${t}</span>`).join('');
 }
-const downloadCache=new Map();
-function animateDownloads(value){const target=Number(value)||0,start=Number(downloadsEl.dataset.value)||0,began=performance.now();downloadsEl.dataset.value=String(target);downloadsEl.classList.remove('is-loading','is-unavailable');downloadsEl.classList.add('is-live');const tick=now=>{const p=Math.min(1,(now-began)/750),e=1-Math.pow(1-p,3);downloadsEl.querySelector('strong').textContent=Math.round(start+(target-start)*e).toLocaleString();if(p<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)}
-async function hydrateDownloads(f,index){downloadsEl.href=`https://sketchfab.com/3d-models/${f.id}`;downloadsEl.className='download-counter is-loading';downloadsEl.querySelector('strong').textContent='•••';try{if(!downloadCache.has(f.id))downloadCache.set(f.id,fetch(`https://api.sketchfab.com/v3/models/${f.id}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>d.downloadCount));const count=await downloadCache.get(f.id);if(index!==selected)return;if(Number.isFinite(Number(count)))animateDownloads(count);else throw new Error('No count')}catch{if(index!==selected)return;downloadsEl.className='download-counter is-unavailable';downloadsEl.querySelector('strong').textContent='NOT PUBLISHED'}}
+const socialCache=new Map();
+function animateCounter(el,value){const target=Number(value)||0,start=Number(el.dataset.value)||0,began=performance.now();el.dataset.value=String(target);el.classList.remove('is-loading','is-unavailable');el.classList.add('is-live');const tick=now=>{const p=Math.min(1,(now-began)/750),e=1-Math.pow(1-p,3);el.querySelector('strong').textContent=Math.round(start+(target-start)*e).toLocaleString();if(p<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)}
+async function hydrateSocial(f,index){const url=`https://sketchfab.com/3d-models/${f.id}`;[downloadsEl,likesEl].forEach(el=>{el.href=url;el.classList.add('is-loading');el.classList.remove('is-live','is-unavailable');el.querySelector('strong').textContent='•••'});try{if(!socialCache.has(f.id))socialCache.set(f.id,fetch(`https://api.sketchfab.com/v3/models/${f.id}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}));const data=await socialCache.get(f.id);if(index!==selected)return;animateCounter(downloadsEl,data.downloadCount);animateCounter(likesEl,data.likeCount)}catch{if(index!==selected)return;[downloadsEl,likesEl].forEach(el=>{el.classList.remove('is-loading');el.classList.add('is-unavailable');el.querySelector('strong').textContent='NOT PUBLISHED'})}}
 const portraitObserver=new IntersectionObserver(entries=>entries.forEach(async entry=>{
   if(!entry.isIntersecting)return;portraitObserver.unobserve(entry.target);const index=Number(entry.target.dataset.fighter),f=FIGHTERS[index],data=await getMetadata(f);
   const image=data?.thumb||FALLBACK_THUMBS[f.id];if(image){const img=entry.target.querySelector('img');img.src=image;img.alt=`Preview of ${f.name}`;entry.target.classList.add('has-portrait')}
@@ -52,7 +53,7 @@ function selectFighter(index,scroll=false){
   selected=(index+FIGHTERS.length)%FIGHTERS.length; const f=FIGHTERS[selected], num=String(selected+1).padStart(2,'0');
   loading.classList.remove('hidden'); viewer.src=`https://sketchfab.com/models/${f.id}/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=0&ui_hint=0`;
   nameEl.textContent=f.name; numberEl.textContent=num; currentEl.textContent=num; sourceLink.href=`https://sketchfab.com/3d-models/${f.id}`;
-  renderStats(f);hydrateActive(f,selected);hydrateDownloads(f,selected);
+  renderStats(f);hydrateActive(f,selected);hydrateSocial(f,selected);
   document.querySelector('[data-fighter].active')?.classList.remove('active'); const tile=document.querySelector(`[data-fighter="${selected}"]`); tile.classList.add('active'); if(scroll)tile.scrollIntoView({behavior:'smooth',block:'nearest'});
   if(!scroll)holdViewport(stableY);
   document.documentElement.style.setProperty('--fighter-hue',String((selected*37)%360));
