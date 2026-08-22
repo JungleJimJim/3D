@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jungle Jim's Store and 3D Portfolio — production-ready Blender add-ons, software and 3D assets by Background People.">
+  <meta name="theme-color" content="#090a0c">
+  <title>Jungle Jim's Store and 3D Portfolio — Tools & 3D Assets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="nav shell">
+    <a class="brand" href="#top" aria-label="Jungle Jim's Store and 3D Portfolio home">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <span>JUNGLE JIM'S <b>STORE &amp; 3D PORTFOLIO</b></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#catalog">Catalog</a>
+      <a href="characters.html">Characters</a>
+      <a href="scifi.html">Sci-Fi</a>
+      <a href="vehicles.html">Vehicles</a>
+      <a href="animals.html">Animals</a>
+      <a href="potatoes.html">Potatoes</a>
+      <a href="#jungle-jim-tv">Jungle Jim TV</a>
+      <a href="#about">About</a>
+      <a class="nav-cta" href="https://backgroundpeople.gumroad.com/" target="_blank" rel="noopener">Gumroad ↗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> DIGITAL TOOLS FOR 3D CREATORS</p>
+        <h1>Build worlds.<br><em>Skip the busywork.</em></h1>
+        <p class="lede">A focused collection of Blender add-ons and production-ready 3D assets made to keep you in the flow.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#catalog">Explore the catalog <span>↓</span></a>
+          <a class="button ghost" href="https://backgroundpeople.gumroad.com/" target="_blank" rel="noopener">Visit creator ↗</a>
+        </div>
+        <div class="metrics" aria-label="Store highlights">
+          <div><strong id="product-count">—</strong><span>CURATED PRODUCTS</span></div>
+          <div><strong>2</strong><span>FOCUSED COLLECTIONS</span></div>
+          <div><strong>∞</strong><span>CREATIVE POSSIBILITIES</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Interactive 3D Blender-inspired sculpture. Move your pointer to rotate it.">
+        <canvas id="scene"></canvas>
+        <div class="visual-label top"><span>●</span> INTERACTIVE / 3D</div>
+        <div class="visual-label bottom">MOVE TO ORBIT <span>↗</span></div>
+      </div>
+    </section>
+
+    <section class="catalog shell" id="catalog">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow"><span></span> THE COLLECTION</p>
+          <h2>Find your next<br>creative shortcut.</h2>
+        </div>
+        <div class="catalog-tools">
+          <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search the catalog..." autocomplete="off"></label>
+          <div class="filters" role="group" aria-label="Filter products">
+            <button class="active" data-filter="all">All <b id="all-count"></b></button>
+            <button data-filter="software">Add-ons / Software <b id="software-count"></b></button>
+            <button data-filter="models">3D Models <b id="models-count"></b></button>
+          </div>
+        </div>
+      </div>
+      <div id="product-grid" class="product-grid" aria-live="polite"></div>
+      <div id="empty" class="empty" hidden>No assets found. Try another search.</div>
+    </section>
+
+    <section class="tv-section" id="jungle-jim-tv">
+      <div class="shell tv-layout">
+        <div class="tv-copy">
+          <p class="eyebrow"><span></span> NOW TRANSMITTING</p>
+          <h2>Jungle Jim<br><em>TV.</em></h2>
+          <p>Product demos, animated creatures and strange new worlds—broadcast direct from the Jungle Jim archive.</p>
+          <div class="channel-readout"><small>NOW PLAYING</small><strong id="tv-now-playing">CH 01 / BACKGROUND PEOPLE</strong></div>
+          <div class="channel-list" id="channel-list" role="group" aria-label="Jungle Jim TV channels"></div>
+          <a class="youtube-link" href="https://www.youtube.com/@backgroundpeople-blender" target="_blank" rel="noopener">VISIT THE YOUTUBE CHANNEL <span>↗</span></a>
+        </div>
+        <div class="tv-stage" id="tv-stage">
+          <div class="tv-glow" aria-hidden="true"></div>
+          <div class="tv-set" id="tv-set">
+            <div class="tv-antenna" aria-hidden="true"><i></i><i></i><b></b></div>
+            <div class="tv-case">
+              <div class="tv-bezel">
+                <div class="tv-screen">
+                  <video id="jungle-video" controls playsinline preload="metadata"></video>
+                  <iframe id="youtube-video" title="Jungle Jim TV YouTube player" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen hidden></iframe>
+                  <div class="youtube-file-fallback" id="youtube-file-fallback" hidden>
+                    <span>YT</span><strong>WEB PLAYER REQUIRED</strong>
+                    <p>YouTube blocks embedded playback from direct file previews.</p>
+                    <a id="youtube-fallback-link" href="https://www.youtube.com/@backgroundpeople-blender/videos" target="_blank" rel="noopener">WATCH THIS VIDEO ↗</a>
+                  </div>
+                  <div class="tv-scanlines" aria-hidden="true"></div>
+                  <div class="tv-glass" aria-hidden="true"></div>
+                  <button class="tv-start" id="tv-start" type="button"><span>▶</span> START BROADCAST</button>
+                </div>
+              </div>
+              <div class="tv-controls" aria-hidden="true">
+                <div class="tv-logo">JUNGLE<br><b>JIM</b></div>
+                <div class="dial"><i></i></div><div class="dial small"><i></i></div>
+                <div class="speaker"></div>
+              </div>
+            </div>
+            <div class="tv-feet" aria-hidden="true"><i></i><i></i></div>
+          </div>
+          <div class="tv-floor" aria-hidden="true"></div>
+          <p class="orbit-hint">MOVE LEFT / RIGHT TO LOOK AROUND</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about shell" id="about">
+      <div class="about-card">
+        <p class="eyebrow"><span></span> MADE FOR THE FLOW</p>
+        <h2>Less setup.<br><em>More making.</em></h2>
+        <p>Every product links directly to its official Gumroad page. Secure checkout, downloads, licensing details and product updates are handled there by the creator.</p>
+        <a class="button primary" href="https://backgroundpeople.gumroad.com/" target="_blank" rel="noopener">Open the full storefront ↗</a>
+      </div>
+      <div class="orbital" aria-hidden="true"><div class="orbit o1"></div><div class="orbit o2"></div><div class="core">B</div></div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    <a class="brand" href="#top"><span class="brand-mark"><i></i><i></i><i></i></span><span>JUNGLE JIM'S <b>STORE &amp; 3D PORTFOLIO</b></span></a>
+    <p>Independent catalog for Background People products.</p>
+    <a href="#top">BACK TO TOP ↑</a>
+  </footer>
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
