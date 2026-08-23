@@ -8,6 +8,12 @@ const viewer=document.querySelector('#fighter-viewer'), nameEl=document.querySel
 const tagsEl=document.createElement('div');tagsEl.className='model-tags';descriptionEl.after(tagsEl);
 const downloadsEl=document.createElement('a');downloadsEl.className='download-counter is-loading';downloadsEl.target='_blank';downloadsEl.rel='noopener';downloadsEl.innerHTML='<span>SKETCHFAB DOWNLOADS</span><strong>•••</strong><small>VIEW MODEL ↗</small>';sourceLink.after(downloadsEl);
 const likesEl=document.createElement('a');likesEl.className='download-counter like-counter is-loading';likesEl.target='_blank';likesEl.rel='noopener';likesEl.innerHTML='<span>SKETCHFAB LIKES</span><strong>•••</strong><small>VIEW MODEL ↗</small>';downloadsEl.after(likesEl);
+const arena=document.querySelector('.fighter-arena'),descriptionWrap=document.querySelector('.model-description-wrap');
+arena.setAttribute('role','dialog');arena.setAttribute('aria-modal','true');arena.setAttribute('aria-label','Selected 3D model');arena.setAttribute('aria-hidden','true');descriptionWrap.classList.add('popover-intel');arena.append(descriptionWrap);
+const closeModalButton=document.createElement('button');closeModalButton.type='button';closeModalButton.className='model-modal-close';closeModalButton.setAttribute('aria-label','Close 3D model');closeModalButton.innerHTML='<span>×</span><small>CLOSE</small>';arena.prepend(closeModalButton);
+function openModelModal(){document.body.classList.add('model-modal-open');arena.setAttribute('aria-hidden','false');setTimeout(()=>closeModalButton.focus(),60)}
+function closeModelModal(){document.body.classList.remove('model-modal-open');arena.setAttribute('aria-hidden','true');viewer.src='about:blank'}
+closeModalButton.addEventListener('click',closeModelModal);arena.addEventListener('click',e=>{if(e.target===arena)closeModelModal()});
 let selected=0;
 totalEl.textContent=FIGHTERS.length;
 roster.innerHTML=FIGHTERS.map((f,i)=>`<button type="button" data-fighter="${i}" aria-label="Select ${f.name}"><img alt="" loading="lazy"><span>${String(i+1).padStart(2,'0')}</span><b>${f.name}</b><i></i></button>`).join('');
@@ -61,6 +67,6 @@ function selectFighter(index,scroll=false){
 viewer.addEventListener('load',()=>loading.classList.add('hidden'));
 document.querySelector('#prev-fighter').addEventListener('click',()=>selectFighter(selected-1,false));
 document.querySelector('#next-fighter').addEventListener('click',()=>selectFighter(selected+1,false));
-roster.addEventListener('click',e=>{const b=e.target.closest('[data-fighter]');if(b)selectFighter(Number(b.dataset.fighter),false)});
-addEventListener('keydown',e=>{if(e.key==='ArrowLeft')selectFighter(selected-1,false);if(e.key==='ArrowRight')selectFighter(selected+1,false);if(e.key==='Enter'&&document.activeElement?.dataset?.fighter)viewer.focus()});
+roster.addEventListener('click',e=>{const b=e.target.closest('[data-fighter]');if(b){selectFighter(Number(b.dataset.fighter),false);openModelModal()}});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('model-modal-open'))closeModelModal();if(!document.body.classList.contains('model-modal-open'))return;if(e.key==='ArrowLeft')selectFighter(selected-1,false);if(e.key==='ArrowRight')selectFighter(selected+1,false)});
 selectFighter(0);
