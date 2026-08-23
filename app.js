@@ -2,6 +2,7 @@ const products = window.PRODUCTS;
 const grid = document.querySelector('#product-grid');
 const search = document.querySelector('#search');
 const empty = document.querySelector('#empty');
+const categoryLabels = window.CATEGORIES || {software:'Add-ons / Software',models:'3D Models'};
 let activeFilter = 'all';
 
 const art = (type) => {
@@ -22,7 +23,7 @@ function render() {
   grid.innerHTML = visible.map((p, i) => `
     <article class="product-card ${p.featured ? 'featured' : ''}" style="--delay:${i * 35}ms">
       <a class="card-hit" href="${p.url}" target="_blank" rel="noopener" aria-label="View ${p.name} on Gumroad"></a>
-      <div class="card-top"><span class="pill">${p.category === 'software' ? 'ADD-ON / SOFTWARE' : '3D ASSET'}</span><span class="arrow">↗</span></div>
+      <div class="card-top"><span class="pill">${categoryLabels[p.category] || '3D ASSET'}</span><span class="arrow">↗</span></div>
       ${preview(p)}
       <div class="card-info"><small>${p.tag}</small><h3>${p.name}</h3><p>${p.desc}</p><div class="card-foot"><strong>${p.price}</strong><span>VIEW PRODUCT ↗</span></div></div>
     </article>`).join('');
@@ -31,9 +32,9 @@ function render() {
 }
 
 document.querySelector('#product-count').textContent = products.length.toString().padStart(2, '0');
-document.querySelector('#all-count').textContent = products.length;
-document.querySelector('#software-count').textContent = products.filter(p => p.category === 'software').length;
-document.querySelector('#models-count').textContent = products.filter(p => p.category === 'models').length;
+const filters = document.querySelector('#catalog-filters');
+filters.innerHTML = `<button class="active" data-filter="all">All <b>${products.length}</b></button>` +
+  Object.entries(categoryLabels).map(([key,label]) => `<button data-filter="${key}">${label} <b>${products.filter(p => p.category === key).length}</b></button>`).join('');
 document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => {
   document.querySelector('[data-filter].active').classList.remove('active');
   button.classList.add('active'); activeFilter = button.dataset.filter; render();

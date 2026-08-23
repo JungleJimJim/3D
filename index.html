@@ -62,11 +62,7 @@
         </div>
         <div class="catalog-tools">
           <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search the catalog..." autocomplete="off"></label>
-          <div class="filters" role="group" aria-label="Filter products">
-            <button class="active" data-filter="all">All <b id="all-count"></b></button>
-            <button data-filter="software">Add-ons / Software <b id="software-count"></b></button>
-            <button data-filter="models">3D Models <b id="models-count"></b></button>
-          </div>
+          <div class="filters" id="catalog-filters" role="group" aria-label="Filter products"></div>
         </div>
       </div>
       <div id="product-grid" class="product-grid" aria-live="polite"></div>
